@@ -10,47 +10,27 @@ class Router
 
     public static function get($uri, $handler)
     {
-        $_uri = new URI($uri);
-        $route = new Route($uri, $handler, 'GET');
-
-        self::init();
-        self::$routeList->add($route);
+        return static::registerRoute($uri, $handler, 'GET');
     }
 
     public static function post($uri, $handler)
     {
-        $_uri = new URI($uri);
-        $route = new Route($uri, $handler, 'POST');
-
-        self::init();
-        self::$routeList->add($route);
+        return static::registerRoute($uri, $handler, 'POST');
     }
 
     public static function put($uri, $handler)
     {
-        $_uri = new URI($uri);
-        $route = new Route($uri, $handler, 'PUT');
-
-        self::init();
-        self::$routeList->add($route);
+        return static::registerRoute($uri, $handler, 'PUT');
     }
 
     public static function patch($uri, $handler)
     {
-        $_uri = new URI($uri);
-        $route = new Route($uri, $handler, 'PATCH');
-
-        self::init();
-        self::$routeList->add($route);
+        return static::registerRoute($uri, $handler, 'PATCH');
     }
 
     public static function delete($uri, $handler)
     {
-        $_uri = new URI($uri);
-        $route = new Route($uri, $handler, 'DELETE');
-
-        self::init();
-        self::$routeList->add($route);
+        return static::registerRoute($uri, $handler, 'DELETE');
     }
 
     public static function init()
@@ -71,5 +51,16 @@ class Router
             header("HTTP/1.0 404 Not Found");
             echo "404 Not Found";
         }
+    }
+
+    public static function registerRoute($uri, $handler, $method)
+    {
+        $_uri = new URI($uri);
+        $route = new Route($uri, $handler, $method);
+
+        self::init();
+        self::$routeList->add($route);
+
+        return $route;
     }
 }

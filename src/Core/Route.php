@@ -9,6 +9,7 @@ class Route
     private URI $uri;
     private $handler;
     private string $method;
+    private string $name;
 
     public function __construct(string $uri, $handler, string $method)
     {
@@ -25,7 +26,7 @@ class Route
     public function handle()
     {
         if (is_callable($this->handler)) {
-            
+
             return call_user_func_array($this->handler, $this->uri->getParameters());
         }
 
@@ -38,5 +39,18 @@ class Route
         }
 
         throw new Exception('Invalid handler provided.');
+    }
+
+    public function name(string $name): Route
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function where(string $regex): Route
+    {
+        
+        return $this;
     }
 }
