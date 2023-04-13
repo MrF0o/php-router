@@ -1,0 +1,21 @@
+{
+    "name": "mrf0o/php-router",
+    "description": "A laravel like yet simple PHP router implementation",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mrfoo\\Router\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Fathi Helmi",
+            "email": "fathi.mrfoo@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "9.6.x-dev"
+    }
+}
