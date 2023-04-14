@@ -3,18 +3,25 @@
 declare(strict_types=1);
 require './vendor/autoload.php';
 
-use Mrfoo\Router\Router;
+use Mrfoo\PHPRouter\Router;
 use PHPUnit\Framework\TestCase;
-use Mrfoo\Router\Core\URI;
+use Mrfoo\PHPRouter\Core\URI;
 
-final class Router extends TestCase
+final class RouterTest extends TestCase
 {
-    public function testGet(): void
+    /* 
+    * @runInSeparateProcess
+    */
+    public function testRun(): void
     {
-        Router::get('/hello', function (test) {
-            echo 'hello';
+        // fake some data
+        $_SERVER['REQUEST_URI'] = "/";
+        $_SERVER['REQUEST_METHOD'] = "GET";
+
+        Router::get('/', function () {
+            echo "hello";
         });
 
-        $this->assertTrue();
+        $this->assertTrue(Router::run());
     }
 }

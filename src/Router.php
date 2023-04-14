@@ -1,9 +1,11 @@
 <?php
+namespace Mrfoo\PHPRouter;
 
 use Mrfoo\PHPRouter\Core\LinkedList;
 use Mrfoo\PHPRouter\Core\Route;
 use Mrfoo\PHPRouter\Core\URI;
 use Mrfoo\PHPRouter\Exceptions\MethodNotSupportedException;
+use Exception;
 
 class Router
 {
@@ -44,6 +46,7 @@ class Router
 
     public static function run()
     {
+        self::init();
         $user_uri = $_SERVER['REQUEST_URI'];
         $user_method = $_SERVER['REQUEST_METHOD'];
         $route = self::$routeList->search(new URI($user_uri));
@@ -51,17 +54,21 @@ class Router
         if ($route && $route->getMethod() == $user_method) {
             $route->handle();
         } else {
-            if ($route->getMethod() != $user_method) {
+            if ($route && $route->getMethod() != $user_method) {
                 try {
                     throw new MethodNotSupportedException($user_method, [$route->getMethod()]);
                 } catch (Exception $e) {
                     print ($e->getMessage());
+                    return false;
                 }
             } else {
                 header("HTTP/1.0 404 Not Found");
                 echo "404 Not Found";
+                return false;
             }
         }
+
+        return true;
     }
 
     public static function registerRoute($uri, $handler, $method)
