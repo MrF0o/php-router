@@ -1,12 +1,14 @@
 <?php
 
-use Mrfoo\Router\Core\LinkedList;
-use Mrfoo\Router\Core\Route;
-use Mrfoo\Router\Core\URI;
+use Mrfoo\PHPRouter\Core\LinkedList;
+use Mrfoo\PHPRouter\Core\Route;
+use Mrfoo\PHPRouter\Core\URI;
+use Mrfoo\PHPRouter\Exceptions\MethodNotSupportedException;
 
 class Router
 {
-    public static $routeList;
+    public static LinkedList $routeList;
+    public static bool $isTrackingGroup;
 
     public static function get($uri, $handler)
     {
@@ -43,13 +45,22 @@ class Router
     public static function run()
     {
         $user_uri = $_SERVER['REQUEST_URI'];
+        $user_method = $_SERVER['REQUEST_METHOD'];
         $route = self::$routeList->search(new URI($user_uri));
 
-        if ($route) {
+        if ($route && $route->getMethod() == $user_method) {
             $route->handle();
         } else {
-            header("HTTP/1.0 404 Not Found");
-            echo "404 Not Found";
+            if ($route->getMethod() != $user_method) {
+                try {
+                    throw new MethodNotSupportedException($user_method, [$route->getMethod()]);
+                } catch (Exception $e) {
+                    print ($e->getMessage());
+                }
+            } else {
+                header("HTTP/1.0 404 Not Found");
+                echo "404 Not Found";
+            }
         }
     }
 
@@ -62,5 +73,22 @@ class Router
         self::$routeList->add($route);
 
         return $route;
+    }
+
+    public static function buildRoute($uri, $handler, $method)
+    {
+        $route = new Route($uri, $handler, $method);
+
+        return $route;
+    }
+
+    public static function group(array $options, $callback): void
+    {
+        self::$isTrackingGroup = true;
+
+        if (isset($options['prefix'])) {
+        }
+
+        call_user_func($callback);
     }
 }

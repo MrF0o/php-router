@@ -1,6 +1,6 @@
 <?php
 
-namespace Mrfoo\Router\Core;
+namespace Mrfoo\PHPRouter\Core;
 
 class URI
 {

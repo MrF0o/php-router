@@ -1,5 +1,5 @@
 <?php
-namespace Mrfoo\Router\Core;
+namespace Mrfoo\PHPRouter\Core;
 
 
 class LinkedList
@@ -28,6 +28,7 @@ class LinkedList
 
         $current->next = $node;
     }
+    
 
     public function search(URI $uri): ?Route
     {

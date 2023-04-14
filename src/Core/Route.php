@@ -1,6 +1,6 @@
 <?php
 
-namespace Mrfoo\Router\Core;
+namespace Mrfoo\PHPRouter\Core;
 
 use Exception;
 
@@ -52,5 +52,9 @@ class Route
     {
         
         return $this;
+    }
+
+    public function getMethod() {
+        return $this->method;
     }
 }
