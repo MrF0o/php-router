@@ -48,8 +48,9 @@ class Route
         return $this;
     }
 
-    public function where(string $regex): Route
+    public function where(string $segmentName, string $regex): Route
     {
+        $this->uri->registerWhereOnSegment($segmentName, $regex);
         
         return $this;
     }

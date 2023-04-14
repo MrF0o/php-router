@@ -54,6 +54,7 @@ class Router
         if ($route && $route->getMethod() == $user_method) {
             $route->handle();
         } else {
+            // shoud be moved to another method ie: performTests($route);
             if ($route && $route->getMethod() != $user_method) {
                 try {
                     throw new MethodNotSupportedException($user_method, [$route->getMethod()]);
@@ -62,6 +63,7 @@ class Router
                     return false;
                 }
             } else {
+                // TODO: NotFoundException
                 header("HTTP/1.0 404 Not Found");
                 echo "404 Not Found";
                 return false;

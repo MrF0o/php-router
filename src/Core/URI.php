@@ -4,9 +4,10 @@ namespace Mrfoo\PHPRouter\Core;
 
 class URI
 {
-    protected $uri;
-    protected $segments = [];
-    protected $parameters = [];
+    private $uri;
+    private $segments = [];
+    private $parameters = [];
+    private $rules = [];
 
     public function __construct($uri)
     {
@@ -67,7 +68,11 @@ class URI
             if ($pattern->getSegment($i) === null && $this->getSegment($i) !== null) {
                 return false;
             } elseif (preg_match('/^{(\w+)}$/', $this->getSegment($i), $matches)) {
-                $this->parameters[$matches[1]] = $pattern->getSegment($i);
+                if ($this->testSegmentAgainst($matches[1], $pattern->getSegment($i))) {
+                    $this->parameters[$matches[1]] = $pattern->getSegment($i);
+                } else {
+                    return false;
+                }
             } elseif ($this->getSegment($i) !== $pattern->getSegment($i)) {
                 return false;
             }
@@ -76,7 +81,27 @@ class URI
         return true;
     }
 
-    public function same(Uri $pattern) {
+    private function testSegmentAgainst($segment, $value)
+    {
+        if (isset($this->rules[$segment])) {
+            $rule = $this->rules[$segment];
+            if (preg_match("/$rule/", $value)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function registerWhereOnSegment($segmentName, $regex)
+    {
+        $this->rules[$segmentName] = $regex;
+    }
+
+    public function same(Uri $pattern)
+    {
         if ($this->countSegments() !== $pattern->countSegments()) {
             return false;
         }
