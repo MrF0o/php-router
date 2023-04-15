@@ -99,7 +99,7 @@ Here I used `UserController` class as an example to demonstrate, the other conve
 # TODO
 - [ ] Route Grouping
 - [ ] Route redirects
-- [ ] `route` helper method, this should be globally available
+- [ ] `route` helper function, this should be globally available
 - [ ] Middlewares
 - [ ] Rate limiting
 - [ ] helper methods for routes constraints
