@@ -77,7 +77,7 @@ Also, you can create route groups using the `group` method of the router class, 
 
 ```php
 Router::group(['prefix' => '/user'], function () {
-	// here all the routes will be prefixed with /user
+	// here all routes will be prefixed with /user
     Router::get('/update', fn () => die('not implemented')); /* /user/update */
 });
 ```
@@ -107,7 +107,7 @@ Router::run();
 Here I used `UserController` class as an example to demonstrate, the other convention to use route handlers besides the callback function.
 
 # TODO
-- [ ] Route Grouping
+- [X] Route Grouping
 - [ ] Route redirects
 - [ ] `route` helper function, this should be globally available
 - [ ] Middlewares
