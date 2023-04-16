@@ -18,6 +18,15 @@ This router has several features that make it a powerful tool for handling HTTP 
 
 
 # Getting Started
+
+- [Installation](#installation)
+- [The Router class](#the-router-class)
+- [Route parameters](#route-parameters)
+- [Regular Expression Constraints](#regular-expression-constraints)
+- [Named Routes](#named-routes)
+- [Grouping routes](#grouping-routes)
+- [Example](#quick-example)
+
 ## Installation
 You may use composer to intall [MrF0o/php-router](https://github.com/MrF0o/php-router) by running this command:
 ```bash
