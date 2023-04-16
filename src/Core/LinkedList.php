@@ -1,4 +1,5 @@
 <?php
+
 namespace Mrfoo\PHPRouter\Core;
 
 
@@ -28,7 +29,7 @@ class LinkedList
 
         $current->next = $node;
     }
-    
+
 
     public function search(URI $uri): ?Route
     {
@@ -42,6 +43,32 @@ class LinkedList
         }
 
         return null;
+    }
+
+    public function mergeAtTail(LinkedList $list)
+    {
+        $current = $this->head;
+
+        while ($current->next !== null)
+            $current = $current->next;
+
+        $list->forEach(function (Route $r) {
+            $this->add($r);
+        });
+
+        return null;
+    }
+
+    public function forEach($callback)
+    {
+        $current = $this->head;
+
+        while ($current !== null) {
+
+            call_user_func($callback, $current->value);
+
+            $current = $current->next;
+        }
     }
 }
 

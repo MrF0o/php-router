@@ -58,4 +58,8 @@ class Route
     public function getMethod() {
         return $this->method;
     }
+
+    public function applyPrefix($prefix) {
+        $this->uri = new URI($prefix . $this->uri->getUri());
+    }
 }

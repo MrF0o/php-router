@@ -10,7 +10,8 @@ use Exception;
 class Router
 {
     public static LinkedList $routeList;
-    public static bool $isTrackingGroup;
+    public static ?LinkedList $tmpGroup;
+    public static bool $isTrackingGroup = false;
 
     public static function get($uri, $handler)
     {
@@ -41,6 +42,7 @@ class Router
     {
         if (!isset(self::$routeList)) {
             self::$routeList = new LinkedList();
+            self::$tmpGroup = new LinkedList();
         }
     }
 
@@ -79,7 +81,12 @@ class Router
         $route = new Route($uri, $handler, $method);
 
         self::init();
-        self::$routeList->add($route);
+        if (self::$isTrackingGroup) {
+            self::$tmpGroup->add($route);
+        } else {
+            self::$routeList->add($route);
+        }
+        
 
         return $route;
     }
@@ -96,8 +103,22 @@ class Router
         self::$isTrackingGroup = true;
 
         if (isset($options['prefix'])) {
+            $_p = $options['prefix'];
+            call_user_func($callback);
+
+            // now $tmpGroup have each grouped route
+            // 1. apply prefix
+            self::$tmpGroup->forEach(function (Route $route) use ($_p) {
+                $route->applyPrefix($_p);
+            });
+
+            // 2. apply middlewares
+            // TODO
         }
 
-        call_user_func($callback);
+        self::$routeList->mergeAtTail(self::$tmpGroup);
+
+        self::$isTrackingGroup = false;
+        self::$tmpGroup = null;
     }
 }
