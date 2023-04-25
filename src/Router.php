@@ -38,6 +38,16 @@ class Router
         return static::registerRoute($uri, $handler, 'DELETE');
     }
 
+    public static function match(array $methods, $uri , $handler)
+    {
+        return die('unimplemented function: ' . __FUNCTION__);
+    }
+
+    public static function any($uri, $handler)
+    {
+        return die('unimplemented function: ' . __FUNCTION__);
+    }
+
     public static function init()
     {
         if (!isset(self::$routeList)) {
@@ -120,5 +130,10 @@ class Router
 
         self::$isTrackingGroup = false;
         self::$tmpGroup = null;
+    }
+
+    public function redirect(string $route, int $status) : Route
+    {
+        return die('unimplemented function: ' . __FUNCTION__);
     }
 }
