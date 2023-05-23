@@ -1,4 +1,5 @@
 <?php
+
 namespace Mrfoo\PHPRouter;
 
 use Mrfoo\PHPRouter\Core\LinkedList;
@@ -38,7 +39,7 @@ class Router
         return static::registerRoute($uri, $handler, 'DELETE');
     }
 
-    public static function match(array $methods, $uri , $handler)
+    public static function match(array $methods, $uri, $handler)
     {
         return die('unimplemented function: ' . __FUNCTION__);
     }
@@ -71,7 +72,7 @@ class Router
                 try {
                     throw new MethodNotSupportedException($user_method, [$route->getMethod()]);
                 } catch (Exception $e) {
-                    print ($e->getMessage());
+                    print($e->getMessage());
                     return false;
                 }
             } else {
@@ -96,7 +97,7 @@ class Router
         } else {
             self::$routeList->add($route);
         }
-        
+
 
         return $route;
     }
@@ -132,8 +133,29 @@ class Router
         self::$tmpGroup = null;
     }
 
-    public function redirect(string $route, int $status) : Route
+    public static function redirect($from, $to, $status = null)
     {
-        return die('unimplemented function: ' . __FUNCTION__);
+        $handle = function () use ($to, $status) {
+
+            if ($status !== null) {
+                http_response_code($status);
+            } else {
+                http_response_code(302);
+            }
+
+            header('Location: ' . $to);
+        };
+
+        self::registerRoute($from, $handle, 'GET');
+    }
+
+    public static function permanentRedirect($from, $to)
+    {
+        $handle = function () use ($to) {
+            http_response_code(301);
+            header('Location: ' . $to);
+        };
+
+        self::registerRoute($from, $handle, 'GET');
     }
 }

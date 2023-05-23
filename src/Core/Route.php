@@ -9,6 +9,9 @@ class Route
     private URI $uri;
     private $handler;
     private string $method;
+    private bool $isRedirect;
+    private URI $redirectUri;
+    private int $redirectStatus;
     private string $name;
 
     public function __construct(string $uri, $handler, string $method)
@@ -41,6 +44,11 @@ class Route
         throw new Exception('Invalid handler provided.');
     }
 
+    public function handleRedirect()
+    {
+        return die('unimplemented function: ' . __FUNCTION__);
+    }
+
     public function name(string $name): Route
     {
         $this->name = $name;
@@ -51,15 +59,26 @@ class Route
     public function where(string $segmentName, string $regex): Route
     {
         $this->uri->registerWhereOnSegment($segmentName, $regex);
-        
+
         return $this;
     }
 
-    public function getMethod() {
+    public function getMethod()
+    {
         return $this->method;
     }
 
-    public function applyPrefix($prefix) {
+    public function applyPrefix($prefix)
+    {
         $this->uri = new URI($prefix . $this->uri->getUri());
+    }
+
+    public function redirect(string $route, int $status): Route
+    {
+        $this->isRedirect = true;
+        $this->redirectUri = new URI($route);
+        $this->redirectStatus = $status;
+
+        return $this;
     }
 }
