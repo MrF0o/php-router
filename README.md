@@ -25,6 +25,7 @@ This router has several features that make it a powerful tool for handling HTTP 
 - [Regular Expression Constraints](#regular-expression-constraints)
 - [Named Routes](#named-routes)
 - [Grouping routes](#grouping-routes)
+- [Route redirects](#route-redirects)
 - [Example](#quick-example)
 
 ## Installation
