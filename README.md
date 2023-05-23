@@ -91,6 +91,25 @@ Router::group(['prefix' => '/user'], function () {
 });
 ```
 
+## Route redirects
+You can redirect a route to another route using the `redirect` method on the Router class.
+
+```php
+Router::redirect('/old', '/new');
+```
+
+by default the redirect will be a `302` redirect, but you can change that by passing the status code as the third argument.
+
+```php
+Router::redirect('/old', '/new', 301);
+```
+
+or if you would like a permanent redirect you can use the `permanentRedirect` method, this will send a `301` redirect.
+
+```php
+Router::permanentRedirect('/old', '/new');
+```
+
 ## Quick Example
 ```php
 <?php
@@ -117,7 +136,7 @@ Here I used `UserController` class as an example to demonstrate, the other conve
 
 # TODO
 - [X] Route Grouping
-- [ ] Route redirects
+- [X] Route redirects
 - [ ] `route` helper function, this should be globally available
 - [ ] Middlewares
 - [ ] Rate limiting
