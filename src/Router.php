@@ -7,11 +7,12 @@ use Mrfoo\PHPRouter\Core\Route;
 use Mrfoo\PHPRouter\Core\URI;
 use Mrfoo\PHPRouter\Exceptions\MethodNotSupportedException;
 use Exception;
+use Mrfoo\PHPRouter\Core\HashTable;
 
 class Router
 {
-    public static LinkedList $routeList;
-    public static ?LinkedList $tmpGroup;
+    public static HashTable $routeList;
+    public static ?HashTable $tmpGroup;
     public static bool $isTrackingGroup = false;
 
     public static function get($uri, $handler)
@@ -52,8 +53,8 @@ class Router
     public static function init()
     {
         if (!isset(self::$routeList)) {
-            self::$routeList = new LinkedList();
-            self::$tmpGroup = new LinkedList();
+            self::$routeList = new HashTable();
+            self::$tmpGroup = new HashTable();
         }
     }
 

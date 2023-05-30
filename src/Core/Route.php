@@ -81,4 +81,8 @@ class Route
 
         return $this;
     }
+
+    public function getURI() {
+        return $this->uri;
+    }
 }
