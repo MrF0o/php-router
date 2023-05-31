@@ -56,6 +56,17 @@ class HashTable
         return null;
     }
 
+    public function searchByName(string $name): ?Route
+    {
+        foreach ($this->routes as $route) {
+            if ($route->getName() === $name) {
+                return $route;
+            }
+        }
+
+        return null;
+    }
+
     // for compatibility reasons with the old linked list
     public function mergeAtTail($list): void
     {

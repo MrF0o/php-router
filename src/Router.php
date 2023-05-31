@@ -159,4 +159,45 @@ class Router
 
         self::registerRoute($from, $handle, 'GET');
     }
+
+    public static function generateURL($routeName, ...$params): string
+    {
+        // find the Route
+        $route = self::$routeList->searchByName($routeName);
+
+        // map each route with each param
+        if ($route) {
+            $segments = $route->getURI()->getSegments();
+            $parameters = $route->getURI()->getParameters();
+
+            if (count($params) == count($parameters)) {
+                
+                // construct the URL string
+                foreach ($parameters as $key => $p) {
+                    $parameters[$key] = $params[array_search($key, array_keys($parameters))];
+                }
+                
+                $base = getBaseUrl();
+                $uri = [];
+                $nextParam = 0;
+
+                foreach ($segments as $i => $seg) {
+                    if ($seg[0] == '{') {
+                        $uri[$i] = $parameters[array_keys($parameters)[$nextParam]];
+                        $nextParam++;
+                    } else {
+                        $uri[$i] = $seg; 
+                    }
+                }
+
+                return $base . implode("/", $uri);
+
+            } else {
+                return die("Parameters provided for route '$routeName' do not match parameters count");
+            }
+
+        } else {
+            return die("No route with name '$routeName'");
+        }
+    }
 }

@@ -26,7 +26,9 @@ This router has several features that make it a powerful tool for handling HTTP 
 - [Named Routes](#named-routes)
 - [Grouping routes](#grouping-routes)
 - [Route redirects](#route-redirects)
+- [Generating URLs](#generating-urls)
 - [Example](#quick-example)
+- [TODO](#todo)
 
 ## Installation
 You may use composer to intall [MrF0o/php-router](https://github.com/MrF0o/php-router) by running this command:
@@ -111,6 +113,18 @@ or if you would like a permanent redirect you can use the `permanentRedirect` me
 Router::permanentRedirect('/old', '/new');
 ```
 
+## Generating URLs
+You can generate URLs for your routes using the `route` helper method, this method accepts the name of the route and a variable count of parameters to be passed to the route.
+
+```php
+Router::get('/user/{id}', function ($id) {
+	// ...
+})->name('user.profile');
+
+$url = route('user.profile', 1);
+// $url = 'http://example.com/user/1'
+```
+
 ## Quick Example
 ```php
 <?php
@@ -138,7 +152,7 @@ Here I used `UserController` class as an example to demonstrate, the other conve
 # TODO
 - [X] Route Grouping
 - [X] Route redirects
-- [ ] `route` helper function, this should be globally available
+- [X] `route` helper function, this should be globally available
 - [ ] Middlewares
 - [ ] Rate limiting
 - [ ] helper methods for routes constraints

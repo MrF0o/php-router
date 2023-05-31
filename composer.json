@@ -7,7 +7,10 @@
     "autoload": {
         "psr-4": {
             "Mrfoo\\PHPRouter\\": "src/"
-        }
+        },
+        "files": [
+            "src/common.php"
+        ]
     },
     "authors": [
         {

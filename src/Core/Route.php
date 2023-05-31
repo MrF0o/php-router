@@ -12,7 +12,7 @@ class Route
     private bool $isRedirect;
     private URI $redirectUri;
     private int $redirectStatus;
-    private string $name;
+    private ?string $name = null;
 
     public function __construct(string $uri, $handler, string $method)
     {
@@ -84,5 +84,9 @@ class Route
 
     public function getURI() {
         return $this->uri;
+    }
+
+    public function getName() {
+        return $this->name;
     }
 }
