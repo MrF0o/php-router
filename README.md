@@ -73,7 +73,7 @@ Router::get('/user/profile', function  () {
 ```
 
 ## Grouping routes
-Also, you can create route groups using the `group` method of the router class, each Route registered in the callback of will share the properties passed to the `group` method.
+Also, you can create route groups using the `group` method of the router class, each Route registered in the callback will share the properties passed to the `group` method.
 
 ```php
 Router::group(['prefix' => '/user'], function () {
