@@ -3,6 +3,8 @@
 namespace Mrfoo\PHPRouter\Core;
 
 use Exception;
+use Middleware;
+use Mrfoo\PHPRouter\Core\Middleware as CoreMiddleware;
 
 class Route
 {
@@ -13,12 +15,14 @@ class Route
     private URI $redirectUri;
     private int $redirectStatus;
     private ?string $name = null;
+    private array $middlewares;
 
     public function __construct(string $uri, $handler, string $method)
     {
         $this->uri = new URI($uri);
         $this->handler = $handler;
         $this->method = $method;
+        $this->middlewares = [];
     }
 
     public function match(URI $uri): bool
@@ -29,7 +33,7 @@ class Route
     public function handle()
     {
         if (is_callable($this->handler)) {
-
+            $this->preHandleMiddlewares();
             return call_user_func_array($this->handler, $this->uri->getParameters());
         }
 
@@ -82,11 +86,47 @@ class Route
         return $this;
     }
 
-    public function getURI() {
+    public function getURI()
+    {
         return $this->uri;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
+    }
+
+    private function configureMiddlewares(array $middlewares)
+    {
+        foreach ($middlewares as $middleware) {
+            if (class_exists($middleware, true)) {
+                $obj = new $middleware;
+                
+                if ($obj instanceof \Mrfoo\PHPRouter\Core\Middleware) {
+                    array_push($this->middlewares, $obj);
+                }
+            }
+        }
+    }
+
+    public function middleware(string|array $middlewares)
+    {
+        if (gettype($middlewares) == 'array')
+            $this->configureMiddlewares($middlewares);
+        else if (gettype($middlewares) == 'string')
+            $this->configureMiddlewares([$middlewares]);
+    }
+
+    private function preHandleMiddlewares() {
+        foreach($this->middlewares as $m) {
+            $m->handle();
+        }
+    }
+
+    // should be public because we are trying to 
+    public function postHandleMiddlewares() {
+        foreach($this->middlewares as $m) {
+            $m->terminate();
+        }
     }
 }

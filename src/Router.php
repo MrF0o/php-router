@@ -67,6 +67,7 @@ class Router
 
         if ($route && $route->getMethod() == $user_method) {
             $route->handle();
+            $route->postHandleMiddlewares();
         } else {
             // shoud be moved to another method ie: performTests($route);
             if ($route && $route->getMethod() != $user_method) {

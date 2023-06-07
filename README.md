@@ -14,6 +14,7 @@ This router is designed to help you easily and efficiently handle HTTP requests 
 - [Grouping routes](#grouping-routes)
 - [Route redirects](#route-redirects)
 - [Generating URLs](#generating-urls)
+- [Middlewares](#middlewares)
 - [Example](#quick-example)
 - [TODO](#todo)
 
@@ -112,6 +113,72 @@ $url = route('user.profile', 1);
 // $url = 'http://example.com/user/1'
 ```
 
+# Middlewares
+Middlewares are a great way to filter requests before they reach your route handler, in this router library Middlewares are represented as classes that Overrides the `handle` method in the \Mrfoo\PHPRouter\Middleware class.
+
+```php
+<?php
+namespace Middlewares;
+
+use Mrfoo\PHPRouter\Core\Middleware;
+
+class AuthMiddleware extends Middleware
+{
+	public function handle()
+	{
+		if (!isset($_SESSION['user_id'])) {
+			// redirect to login page
+			header('Location: /login');
+			exit;
+		}
+	}
+}
+```
+
+the handle method will be called before the route handler, so you can do any checks you want and redirect the user if needed.
+
+Then you can use the middleware in your routes like this:
+
+```php
+Router::get('/user/profile', function () {
+	// ...
+})->name('user.profile')->middleware(AuthMiddleware::class);
+```
+
+and you may assign multiple middlewares to a route like this:
+
+```php
+Router::get('/user/profile', function () {
+	// ...
+})->name('user.profile')->middleware([AuthMiddleware::class, AnotherMiddleware::class]);
+```
+
+you can override the `terminate` method to do any cleanup after the route handler is called.
+
+```php
+<?php
+namespace Middlewares;
+
+use Mrfoo\PHPRouter\Core\Middleware;
+
+class AuthMiddleware extends Middleware
+{
+	public function handle()
+	{
+		if (!isset($_SESSION['user_id'])) {
+			// redirect to login page
+			header('Location: /login');
+			exit;
+		}
+	}
+
+	public function terminate()
+	{
+		// do some cleanup
+	}
+}
+```
+
 ## Quick Example
 ```php
 <?php
@@ -136,10 +203,11 @@ Router::run();
 
 Here I used `UserController` class as an example to demonstrate, the other convention to use route handlers besides the callback function.
 
+
 # TODO
 - [X] Route Grouping
 - [X] Route redirects
 - [X] `route` helper function, this should be globally available
-- [ ] Middlewares
+- [X] helper methods for routes constraints
+- [X] Middlewares
 - [ ] Rate limiting
-- [ ] helper methods for routes constraints
