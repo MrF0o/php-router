@@ -8,12 +8,14 @@ use Mrfoo\PHPRouter\Core\URI;
 use Mrfoo\PHPRouter\Exceptions\MethodNotSupportedException;
 use Exception;
 use Mrfoo\PHPRouter\Core\HashTable;
+use Mrfoo\PHPRouter\Exceptions\NotFoundException;
 
 class Router
 {
     public static HashTable $routeList;
     public static ?HashTable $tmpGroup;
     public static bool $isTrackingGroup = false;
+    public static Router $instance;
 
     public static function get($uri, $handler)
     {
@@ -55,6 +57,7 @@ class Router
         if (!isset(self::$routeList)) {
             self::$routeList = new HashTable();
             self::$tmpGroup = new HashTable();
+            self::$instance = new Router();
         }
     }
 
@@ -69,18 +72,10 @@ class Router
             $route->handle();
             $route->postHandleMiddlewares();
         } else {
-            // shoud be moved to another method ie: performTests($route);
-            if ($route && $route->getMethod() != $user_method) {
-                try {
-                    throw new MethodNotSupportedException($user_method, [$route->getMethod()]);
-                } catch (Exception $e) {
-                    print($e->getMessage());
-                    return false;
-                }
-            } else {
-                // TODO: NotFoundException
-                header("HTTP/1.0 404 Not Found");
-                echo "404 Not Found";
+            try {
+                self::$instance->performTests($route, $user_uri, $user_method);
+            } catch (Exception $e) {
+                print($e->getMessage());
                 return false;
             }
         }
@@ -109,6 +104,17 @@ class Router
         $route = new Route($uri, $handler, $method);
 
         return $route;
+    }
+
+    private function performTests($route, $uri, $user_method)
+    {
+        // shoud be moved to another method ie: performTests($route);
+        if ($route == null) {
+            return throw new NotFoundException($uri);
+        }
+        if ($route->getMethod() != $user_method) {
+            return throw new MethodNotSupportedException($user_method, [$route->getMethod()]);
+        }
     }
 
     public static function group(array $options, $callback): void
@@ -172,12 +178,12 @@ class Router
             $parameters = $route->getURI()->getParameters();
 
             if (count($params) == count($parameters)) {
-                
+
                 // construct the URL string
                 foreach ($parameters as $key => $p) {
                     $parameters[$key] = $params[array_search($key, array_keys($parameters))];
                 }
-                
+
                 $base = getBaseUrl();
                 $uri = [];
                 $nextParam = 0;
@@ -187,16 +193,14 @@ class Router
                         $uri[$i] = $parameters[array_keys($parameters)[$nextParam]];
                         $nextParam++;
                     } else {
-                        $uri[$i] = $seg; 
+                        $uri[$i] = $seg;
                     }
                 }
 
                 return $base . implode("/", $uri);
-
             } else {
                 return die("Parameters provided for route '$routeName' do not match parameters count");
             }
-
         } else {
             return die("No route with name '$routeName'");
         }

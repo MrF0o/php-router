@@ -14,7 +14,7 @@ class MethodNotSupportedException extends Exception {
 
     public function __toString(): string
     {
-        return "MethodNotSupportedException" . $this->message;
+        return "MethodNotSupportedException: " . $this->message;
     }
 
 }
