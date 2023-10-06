@@ -1,7 +1,4 @@
 # php-router
-
-(WORK IN PROGRESS)
-
 This router is designed to help you easily and efficiently handle HTTP requests and responses in your PHP applications. It is inspired by the popular Laravel framework, and aims to provide a similar experience and functionality.
 
 # Getting Started
