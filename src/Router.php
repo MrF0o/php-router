@@ -64,7 +64,7 @@ class Router
     public static function run()
     {
         self::init();
-        $user_uri = $_SERVER['REQUEST_URI'];
+        $user_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $user_method = $_SERVER['REQUEST_METHOD'];
         $route = self::$routeList->search(new URI($user_uri));
 
@@ -119,20 +119,27 @@ class Router
 
     public static function group(array $options, $callback): void
     {
+        self::init();
         self::$isTrackingGroup = true;
 
-        if (isset($options['prefix'])) {
-            $_p = $options['prefix'];
-            call_user_func($callback);
+        if ($options && count($options) > 0) {
+            $_p = $options['prefix'] ?? false;
+            $_m = $options['middleware'] ?? false;
+            
+            if ($callback) {
+                call_user_func($callback);
+            }
 
             // now $tmpGroup have each grouped route
-            // 1. apply prefix
-            self::$tmpGroup->forEach(function (Route $route) use ($_p) {
-                $route->applyPrefix($_p);
+            self::$tmpGroup->forEach(function (Route $route) use ($_p, $_m) {
+                // 1. apply prefix
+                if ($_p)
+                    $route->applyPrefix($_p);
+                // 2. apply middlewares
+                if ($_m)
+                    $route->middleware($_m);
             });
 
-            // 2. apply middlewares
-            // TODO
         }
 
         self::$routeList->mergeAtTail(self::$tmpGroup);
