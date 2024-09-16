@@ -2,7 +2,7 @@
     "name": "mrf0o/php-router",
     "description": "A laravel like yet simple PHP router implementation",
     "type": "library",
-    "version": "1.0",
+    "version": "1.0.0",
     "license": "MIT",
     "autoload": {
         "psr-4": {
