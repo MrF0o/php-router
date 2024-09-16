@@ -6,6 +6,7 @@ It is inspired by the popular Laravel framework, and aims to provide a similar e
 # Getting Started
 
 - [Installation](#installation)
+- [Setup](#setup)
 - [The Router class](#the-router-class)
 - [Route parameters](#route-parameters)
 - [Regular Expression Constraints](#regular-expression-constraints)
@@ -51,9 +52,9 @@ php -S localhost:8888 index.php
 This command will run your app on port 8888. And if everything went correctly, visiting http://localhost:8888 on your browser should show the text 'Hello World'.
 
 #### Method 2: Reverse proxy
-Here you can find a .htaccess file example that you can use with the rewrite rules needed for this router to run correctly. You can use the same example code from the previous method and make sure to place the file somewhere under the document root Apache expects (Generally htdocs).
+Here you can find a .htaccess file example that you can use with the rewrite rules needed for this router to run correctly. You can use the same example code from the previous method and make sure to place the file somewhere under the document root that Apache expects (Generally htdocs).
 
-> Apache by default uses index.php as the main file so it will serve it by default. but if you want to use this router globally withing you project you want all traffic to point to the index.php even tho the user tried to access a different folder withing you project.
+> Apache by default uses index.php as the main file so it will serve it by default. but if you want to use this router globally within you project you want all traffic to point to the index.php even tho the user tried to access a different folder withing you project.
 
 ```apacheconf
 <IfModule mod_rewrite.c>
