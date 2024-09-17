@@ -6,127 +6,118 @@ use Exception;
 use Middleware;
 use Mrfoo\PHPRouter\Core\Middleware as CoreMiddleware;
 
-class Route
-{
-    private URI $uri;
-    private $handler;
-    private string $method;
-    private bool $isRedirect;
-    private URI $redirectUri;
-    private int $redirectStatus;
-    private ?string $name = null;
-    private array $middlewares;
+class Route {
+	private URI $uri;
+	private $handler;
+	private string $method;
+	private bool $isRedirect;
+	private URI $redirectUri;
+	private int $redirectStatus;
+	private ?string $name = null;
+	private array $middlewares;
 
-    public function __construct(string $uri, $handler, string $method)
-    {
-        $this->uri = new URI($uri);
-        $this->handler = $handler;
-        $this->method = $method;
-        $this->middlewares = [];
-    }
+	public function __construct( string $uri, $handler, string $method ) {
+		$this->uri         = new URI( $uri );
+		$this->handler     = $handler;
+		$this->method      = $method;
+		$this->middlewares = [];
+	}
 
-    public function match(URI $uri): bool
-    {
-        return $this->uri->match($uri);
-    }
+	public function match( URI $uri ): bool {
+		return $this->uri->match( $uri );
+	}
 
-    public function handle()
-    {
-        if (is_callable($this->handler)) {
-            $this->preHandleMiddlewares();
-            return call_user_func_array($this->handler, $this->uri->getParameters());
-        }
+	/**
+	 * @throws Exception
+	 */
+	public function handle() {
+		if ( is_callable( $this->handler ) ) {
+			$this->preHandleMiddlewares();
 
-        if (is_array($this->handler) && count($this->handler) === 2) {
-            $class = $this->handler[0];
-            $method = $this->handler[1];
-            if (class_exists($class) && method_exists($class, $method)) {
-                return (new $class)->$method();
-            }
-        }
+			return call_user_func_array( $this->handler, $this->uri->getParameters() );
+		}
 
-        throw new Exception('Invalid handler provided.');
-    }
+		if ( is_array( $this->handler ) && count( $this->handler ) === 2 ) {
+			$class  = $this->handler[0];
+			$method = $this->handler[1];
+			if ( class_exists( $class ) && method_exists( $class, $method ) ) {
+				return ( new $class )->$method();
+			}
+		}
 
-    public function handleRedirect()
-    {
-        return die('unimplemented function: ' . __FUNCTION__);
-    }
+		throw new Exception( 'Invalid handler provided.' );
+	}
 
-    public function name(string $name): Route
-    {
-        $this->name = $name;
+	public function handleRedirect() {
+		return die( 'unimplemented function: ' . __FUNCTION__ );
+	}
 
-        return $this;
-    }
+	public function name( string $name ): Route {
+		$this->name = $name;
 
-    public function where(string $segmentName, string $regex): Route
-    {
-        $this->uri->registerWhereOnSegment($segmentName, $regex);
+		return $this;
+	}
 
-        return $this;
-    }
+	public function where( string $segmentName, string $regex ): Route {
+		$this->uri->registerWhereOnSegment( $segmentName, $regex );
 
-    public function getMethod()
-    {
-        return $this->method;
-    }
+		return $this;
+	}
 
-    public function applyPrefix($prefix)
-    {
-        $this->uri = new URI($prefix . $this->uri->getUri());
-    }
+	public function getMethod(): string {
+		return $this->method;
+	}
 
-    public function redirect(string $route, int $status): Route
-    {
-        $this->isRedirect = true;
-        $this->redirectUri = new URI($route);
-        $this->redirectStatus = $status;
+	public function applyPrefix( $prefix ): void {
+		$this->uri = new URI( $prefix . $this->uri->getUri() );
+	}
 
-        return $this;
-    }
+	public function redirect( string $route, int $status ): Route {
+		$this->isRedirect     = true;
+		$this->redirectUri    = new URI( $route );
+		$this->redirectStatus = $status;
 
-    public function getURI()
-    {
-        return $this->uri;
-    }
+		return $this;
+	}
 
-    public function getName()
-    {
-        return $this->name;
-    }
+	public function getURI(): URI {
+		return $this->uri;
+	}
 
-    private function configureMiddlewares(array $middlewares)
-    {
-        foreach ($middlewares as $middleware) {
-            if (class_exists($middleware, true)) {
-                $obj = new $middleware;
-                
-                if ($obj instanceof \Mrfoo\PHPRouter\Core\Middleware) {
-                    array_push($this->middlewares, $obj);
-                }
-            }
-        }
-    }
+	public function getName(): ?string {
+		return $this->name;
+	}
 
-    public function middleware(string|array $middlewares)
-    {
-        if (gettype($middlewares) == 'array')
-            $this->configureMiddlewares($middlewares);
-        else if (gettype($middlewares) == 'string')
-            $this->configureMiddlewares([$middlewares]);
-    }
+	private function configureMiddlewares( array $middlewares ): void {
+		foreach ( $middlewares as $middleware ) {
+			if ( class_exists( $middleware, true ) ) {
+				$obj = new $middleware;
 
-    private function preHandleMiddlewares() {
-        foreach($this->middlewares as $m) {
-            $m->handle();
-        }
-    }
+				if ( $obj instanceof \Mrfoo\PHPRouter\Core\Middleware ) {
+					$this->middlewares[] = $obj;
+				}
+			}
+		}
+	}
 
-    // should be public because we are trying to 
-    public function postHandleMiddlewares() {
-        foreach($this->middlewares as $m) {
-            $m->terminate();
-        }
-    }
+	public function middleware( string|array $middlewares ): void {
+		if ( gettype( $middlewares ) == 'array' ) {
+			$this->configureMiddlewares( $middlewares );
+		} else if ( gettype( $middlewares ) == 'string' ) {
+			$this->configureMiddlewares( [ $middlewares ] );
+		}
+	}
+
+	private function preHandleMiddlewares(): void {
+		foreach ( $this->middlewares as $m ) {
+			$m->handle();
+		}
+	}
+
+	// should be public because we are trying to
+	public function postHandleMiddlewares(): void {
+		foreach ( $this->middlewares as $m ) {
+			$m->terminate();
+		}
+	}
 }

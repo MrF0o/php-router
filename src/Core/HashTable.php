@@ -4,81 +4,64 @@ namespace Mrfoo\PHPRouter\Core;
 
 class HashTable
 {
-    public array $routes;
+	/** @var array<string, Route> */
+	private array $routes = [];
 
-    public function __construct()
-    {
-        $this->routes = [];
-    }
+	/** @var array<string, Route> */
+	private array $routesByName = [];
 
-    public function hash(URI $URI)
-    {
-        $computed = substr(md5(""), 0, 2);
+	public function hash(Route $route): string
+	{
+		$uri = $route->getURI();
+		$method = $route->getMethod();
+		$segments = $uri->getSegments();
 
-        foreach ($URI->getSegments() as $seg) {
-            $computed .= substr(md5($seg), 0, 2);
-        }
+		$hash = $method[0]; // first letter of the method
+		$segmentCount = count($segments);
+		$hash .= chr(($segmentCount % 26) + 97); // lowercase letter representing segment count
 
-        $computed .= count($URI->getSegments());
+		foreach ($segments as $segment) {
+			if ($segment !== '' && $segment[0] === '{' && $segment[-1] === '}') {
+				$hash .= '_'; // placeholder for parameters
+			} elseif ($segment !== '') {
+				$hash .= $segment[0] . strlen($segment); // 1st char and length for normal segments
+			} else {
+				$hash .= '/1'; // home page
+			}
+		}
 
-        return $computed;
-    }
+		return $hash;
+	}
 
-    public function add(Route $route): void
-    {
-        $hash = $this->hash($route->getURI());
-        if (!$this->searchInternal($route->getURI())) {
-            $this->routes[$hash] = $route;
-        } else {
-            // TODO: Route Already Exists
-            die("route already exists");
-        }
-    }
+	public function add(Route $route): void
+	{
+		$hash = $this->hash($route);
+		if (isset($this->routes[$hash])) {
+			throw new \RuntimeException("Route already exists");
+		}
+		$this->routes[$hash] = $route;
+		$this->routesByName[$route->getName()] = $route;
+	}
 
-    private function searchInternal(URI $uri): ?Route
-    {
-        $hash = $this->hash($uri);
-        if (isset($this->routes[$hash])) {
-            return $this->routes[$hash];
-        } else {
-            return NULL;
-        }
-    }
+	public function search(Route $route): ?Route
+	{
+		return $this->routes[$this->hash($route)] ?? null;
+	}
 
-    public function search(URI $uri): ?Route
-    {
-        foreach ($this->routes as $route) {
-            if ($route->match($uri)) {
-                return $route;
-            }
-        }
+	public function searchByName(string $name): ?Route
+	{
+		return $this->routesByName[$name] ?? null;
+	}
 
-        return null;
-    }
+	public function mergeAtTail(iterable $list): void
+	{
+		foreach ($list as $route) {
+			$this->add($route);
+		}
+	}
 
-    public function searchByName(string $name): ?Route
-    {
-        foreach ($this->routes as $route) {
-            if ($route->getName() === $name) {
-                return $route;
-            }
-        }
-
-        return null;
-    }
-
-    // for compatibility reasons with the old linked list
-    public function mergeAtTail($list): void
-    {
-        $list->forEach(function ($el) {
-            $this->add($el);
-        });
-    }
-
-    public function forEach($callback): void
-    {
-        foreach ($this->routes as $route) {
-            call_user_func($callback, $route);
-        }
-    }
+	public function forEach(callable $callback): void
+	{
+		array_walk($this->routes, $callback);
+	}
 }
