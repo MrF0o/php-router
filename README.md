@@ -84,8 +84,8 @@ Note: you need to change index.php to the file that contains the Router::run() c
 
 ## The Router class
 
-[After the installation is complete you can start using the router by including The `Router` class. for example this
-route will fire whenever `/hello` is hit:]()
+After the installation is complete you can start using the router by including The `Router` class. for example this
+route will fire whenever `/hello` is hit:
 
 ```php
 use Mrfoo\PHPRouter\Router;
@@ -110,7 +110,7 @@ in order.
 ```php
 Router::get('/hello/{name}', function ($name) {
     echo  '<h1>hello '.$name.'</h1>';
-})
+});
 ```
 
 > optional parameters aren't implemented yet, so this route will be matched only if the parameter {name} is present,
