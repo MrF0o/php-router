@@ -76,6 +76,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php
 </IfModule>
 ```
+Also, notice the public/ directory in the rewrite rule. This rule redirects all asset requests to the public folder. You can rename this folder to something else, like assets, if you'd prefer. Just make sure to update the rewrite rule accordingly.
 
 Note: you need to change index.php to the file that contains the Router::run() call.
 
